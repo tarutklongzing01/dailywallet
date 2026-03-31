@@ -33,6 +33,10 @@ function buildAutoFillSummary(parsed) {
     chunks.push(`ประเภท ${parsed.type}`);
   }
 
+  if (parsed.description) {
+    chunks.push(`โน้ต ${parsed.description}`);
+  }
+
   return chunks.join(' • ');
 }
 
@@ -128,7 +132,7 @@ function TransactionForm({
           type: nextType,
           date: parsed.date || current.date,
           amount: parsed.amount || current.amount,
-          description: current.description?.trim() ? current.description : parsed.description || current.description,
+          description: current.description?.trim() ? current.description : parsed.description || '',
           category: typeChanged ? '' : current.category,
           customCategory: typeChanged ? '' : current.customCategory,
           receiptOcrText: text,
@@ -265,7 +269,9 @@ function TransactionForm({
           <label className="field">
             <span>รูปสลิป</span>
             <input type="file" accept="image/*" onChange={handleReceiptChange} />
-            <small className="field-help">รองรับไฟล์รูปภาพไม่เกิน 10 MB และควรตรวจสอบผล OCR ก่อนบันทึกทุกครั้ง</small>
+            <small className="field-help">
+              รองรับไฟล์รูปภาพไม่เกิน 10 MB ระบบจะเติมรายละเอียดให้อัตโนมัติเฉพาะเมื่อเจอ note หรือหมายเหตุจริงบนสลิป
+            </small>
             {errors.receiptFile ? <small className="field-error">{errors.receiptFile}</small> : null}
           </label>
 
@@ -351,7 +357,7 @@ function TransactionForm({
           <span>รายละเอียด</span>
           <textarea
             rows="4"
-            placeholder="เช่น ค่าอาหารกลางวัน, รับเงินเดือน, แนบสลิปโอนเงิน"
+            placeholder="ถ้าสลิปมี note ระบบจะเติมให้อัตโนมัติ ถ้าไม่มีสามารถพิมพ์เองได้"
             value={values.description}
             onChange={(event) => updateValue('description', event.target.value)}
           />
