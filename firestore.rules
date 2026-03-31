@@ -53,6 +53,9 @@ service cloud.firestore {
         'category',
         'description',
         'amount',
+        'receiptImageUrl',
+        'receiptImagePath',
+        'receiptOcrText',
         'createdAt',
         'updatedAt'
       ]) &&
@@ -65,7 +68,10 @@ service cloud.firestore {
       request.resource.data.amount is number &&
       request.resource.data.amount > 0 &&
       request.resource.data.date is string &&
-      request.resource.data.date.matches('^\\d{4}-\\d{2}-\\d{2}$');
+      request.resource.data.date.matches('^\\d{4}-\\d{2}-\\d{2}$') &&
+      (!request.resource.data.keys().hasAny(['receiptImageUrl']) || request.resource.data.receiptImageUrl is string) &&
+      (!request.resource.data.keys().hasAny(['receiptImagePath']) || request.resource.data.receiptImagePath is string) &&
+      (!request.resource.data.keys().hasAny(['receiptOcrText']) || request.resource.data.receiptOcrText is string);
     }
 
     match /users/{userId} {

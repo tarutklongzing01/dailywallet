@@ -14,6 +14,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { useUserCategories } from '../hooks/useUserCategories';
 import { useUserTransactions } from '../hooks/useUserTransactions';
+import { deleteReceiptImage } from '../services/storageService';
 import { deleteTransaction } from '../services/transactionService';
 import { exportTransactionsToCsv } from '../utils/csv';
 import { getCurrentMonthValue, getTodayDateString } from '../utils/date';
@@ -110,6 +111,15 @@ function DashboardPage() {
 
     try {
       await deleteTransaction(itemToDelete.id);
+
+      if (itemToDelete.receiptImagePath) {
+        try {
+          await deleteReceiptImage(itemToDelete.receiptImagePath);
+        } catch {
+          info('ลบรายการแล้ว แต่ลบรูปสลิปไม่สำเร็จ');
+        }
+      }
+
       success('ลบรายการเรียบร้อยแล้ว');
       setItemToDelete(null);
     } catch (error) {

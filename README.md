@@ -369,3 +369,27 @@ firebase deploy
 - [src/components/TransactionForm.jsx](./src/components/TransactionForm.jsx)
 - [src/services/transactionService.js](./src/services/transactionService.js)
 - [src/config/firebase-config.js](./src/config/firebase-config.js)
+
+## อัปเดตฟีเจอร์แนบสลิปและอ่านอัตโนมัติ
+
+- ฟอร์มเพิ่ม/แก้ไขรายการสามารถแนบรูปสลิปได้
+- ระบบจะใช้ OCR อ่านข้อความจากสลิป และพยายามเติม `วันที่`, `จำนวนเงิน`, `ประเภทรายการ` ให้อัตโนมัติ
+- ข้อมูลรูปจะถูกเก็บใน Firebase Storage ที่ path รูปแบบ `receipts/{uid}/...`
+- ใน `transactions` จะบันทึกข้อมูลเพิ่มได้คือ `receiptImageUrl`, `receiptImagePath`, `receiptOcrText`
+- หน้าตารางรายการมีลิงก์ `ดูสลิป` สำหรับเปิดรูปแนบย้อนหลัง
+
+### สิ่งที่ต้องตั้งค่าเพิ่มสำหรับฟีเจอร์นี้
+
+1. เปิดใช้งาน Firebase Storage ในโปรเจกต์เดียวกับ Firestore
+2. publish ไฟล์ [storage.rules](./storage.rules)
+3. deploy rules ใหม่ด้วยคำสั่ง:
+
+```bash
+firebase deploy --only firestore:rules,storage
+```
+
+### หมายเหตุของ OCR
+
+- การอ่านสลิปเป็นการช่วยกรอกอัตโนมัติ ไม่ควรใช้แทนการตรวจสอบด้วยสายตา
+- สลิปที่ชัด, ตรง, และมีแสงพอ จะอ่านได้แม่นยำกว่า
+- ถ้า OCR อ่านไม่ครบ ยังสามารถกรอกข้อมูลเองและบันทึกได้ตามปกติ

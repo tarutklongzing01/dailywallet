@@ -7,6 +7,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { useUserCategories } from '../hooks/useUserCategories';
 import { ensureCategoryExists } from '../services/categoryService';
+import { deleteReceiptImage, uploadReceiptImage } from '../services/storageService';
 import { createTransaction } from '../services/transactionService';
 import { getFirebaseErrorMessage } from '../utils/firebaseError';
 
@@ -19,13 +20,27 @@ function TransactionCreatePage() {
 
   const handleSubmit = async (values) => {
     setSubmitting(true);
+    let uploadedReceipt = null;
 
     try {
+      if (values.receiptFile) {
+        uploadedReceipt = await uploadReceiptImage(user.uid, values.receiptFile);
+      }
+
       await ensureCategoryExists(user.uid, values.type, values.category);
-      await createTransaction(user.uid, values);
+      await createTransaction(user.uid, {
+        ...values,
+        receiptImageUrl: uploadedReceipt?.url || '',
+        receiptImagePath: uploadedReceipt?.path || '',
+      });
+
       toast.success('เพิ่มรายการเรียบร้อยแล้ว');
       navigate('/dashboard');
     } catch (error) {
+      if (uploadedReceipt?.path) {
+        await deleteReceiptImage(uploadedReceipt.path);
+      }
+
       toast.error(getFirebaseErrorMessage(error));
     } finally {
       setSubmitting(false);
@@ -35,7 +50,7 @@ function TransactionCreatePage() {
   return (
     <AppShell
       title="เพิ่มรายการใหม่"
-      subtitle="บันทึกรายรับหรือรายจ่ายให้ครบถ้วน พร้อมหมวดหมู่ที่เหมาะสม"
+      subtitle="บันทึกรายรับหรือรายจ่าย พร้อมแนบรูปสลิปและอ่านข้อมูลอัตโนมัติได้"
       actions={
         <Link to="/dashboard" className="button button--ghost">
           กลับไป Dashboard

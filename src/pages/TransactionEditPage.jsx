@@ -7,6 +7,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import { useUserCategories } from '../hooks/useUserCategories';
 import { ensureCategoryExists } from '../services/categoryService';
+import { deleteReceiptImage, uploadReceiptImage } from '../services/storageService';
 import { getTransactionById, updateTransaction } from '../services/transactionService';
 import { getFirebaseErrorMessage } from '../utils/firebaseError';
 
@@ -38,6 +39,11 @@ function TransactionEditPage() {
           customCategory: '',
           description: transaction.description,
           amount: transaction.amount,
+          receiptImageUrl: transaction.receiptImageUrl || '',
+          receiptImagePath: transaction.receiptImagePath || '',
+          receiptOcrText: transaction.receiptOcrText || '',
+          receiptFile: null,
+          clearReceipt: false,
         });
       } catch (error) {
         toast.error(getFirebaseErrorMessage(error));
@@ -53,13 +59,46 @@ function TransactionEditPage() {
 
   const handleSubmit = async (values) => {
     setSubmitting(true);
+    let uploadedReceipt = null;
+    const previousReceiptPath = initialValues?.receiptImagePath || '';
 
     try {
+      let nextReceiptImageUrl = values.receiptImageUrl || '';
+      let nextReceiptImagePath = values.receiptImagePath || '';
+
+      if (values.receiptFile) {
+        uploadedReceipt = await uploadReceiptImage(user.uid, values.receiptFile);
+        nextReceiptImageUrl = uploadedReceipt.url;
+        nextReceiptImagePath = uploadedReceipt.path;
+      }
+
+      if (values.clearReceipt) {
+        nextReceiptImageUrl = '';
+        nextReceiptImagePath = '';
+      }
+
       await ensureCategoryExists(user.uid, values.type, values.category);
-      await updateTransaction(transactionId, user.uid, values);
+      await updateTransaction(transactionId, user.uid, {
+        ...values,
+        receiptImageUrl: nextReceiptImageUrl,
+        receiptImagePath: nextReceiptImagePath,
+      });
+
+      if ((values.clearReceipt || values.receiptFile) && previousReceiptPath) {
+        try {
+          await deleteReceiptImage(previousReceiptPath);
+        } catch {
+          toast.info('อัปเดตรายการแล้ว แต่ลบรูปสลิปเดิมไม่สำเร็จ');
+        }
+      }
+
       toast.success('อัปเดตรายการเรียบร้อยแล้ว');
       navigate('/dashboard');
     } catch (error) {
+      if (uploadedReceipt?.path) {
+        await deleteReceiptImage(uploadedReceipt.path);
+      }
+
       toast.error(getFirebaseErrorMessage(error));
     } finally {
       setSubmitting(false);
@@ -69,7 +108,7 @@ function TransactionEditPage() {
   return (
     <AppShell
       title="แก้ไขรายการ"
-      subtitle="ปรับรายละเอียดรายการเดิม แล้วบันทึกกลับเข้าสู่ระบบ"
+      subtitle="แก้ไขข้อมูลรายการเดิม พร้อมเปลี่ยนหรือแนบสลิปใหม่ได้"
       actions={
         <Link to="/dashboard" className="button button--ghost">
           กลับไป Dashboard

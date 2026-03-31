@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteField,
   deleteDoc,
   doc,
   getDoc,
@@ -16,8 +17,8 @@ import { sortTransactions } from '../utils/transactionStats';
 
 const transactionsCollection = collection(db, 'transactions');
 
-function buildTransactionPayload(uid, values) {
-  return {
+function buildBaseTransactionPayload(uid, values) {
+  const payload = {
     uid,
     date: values.date,
     type: values.type,
@@ -26,6 +27,38 @@ function buildTransactionPayload(uid, values) {
     amount: Number(values.amount),
     updatedAt: serverTimestamp(),
   };
+
+  if (values.receiptImageUrl) {
+    payload.receiptImageUrl = values.receiptImageUrl;
+  }
+
+  if (values.receiptImagePath) {
+    payload.receiptImagePath = values.receiptImagePath;
+  }
+
+  if (values.receiptOcrText) {
+    payload.receiptOcrText = values.receiptOcrText;
+  }
+
+  return payload;
+}
+
+function buildTransactionUpdatePayload(uid, values) {
+  const payload = buildBaseTransactionPayload(uid, values);
+
+  if (!values.receiptImageUrl) {
+    payload.receiptImageUrl = deleteField();
+  }
+
+  if (!values.receiptImagePath) {
+    payload.receiptImagePath = deleteField();
+  }
+
+  if (!values.receiptOcrText) {
+    payload.receiptOcrText = deleteField();
+  }
+
+  return payload;
 }
 
 export function subscribeToTransactions(uid, onData, onError) {
@@ -46,7 +79,7 @@ export function subscribeToTransactions(uid, onData, onError) {
 }
 
 export async function createTransaction(uid, values) {
-  const payload = buildTransactionPayload(uid, values);
+  const payload = buildBaseTransactionPayload(uid, values);
 
   const docRef = await addDoc(transactionsCollection, {
     ...payload,
@@ -57,7 +90,7 @@ export async function createTransaction(uid, values) {
 }
 
 export async function updateTransaction(transactionId, uid, values) {
-  await updateDoc(doc(db, 'transactions', transactionId), buildTransactionPayload(uid, values));
+  await updateDoc(doc(db, 'transactions', transactionId), buildTransactionUpdatePayload(uid, values));
 }
 
 export async function deleteTransaction(transactionId) {

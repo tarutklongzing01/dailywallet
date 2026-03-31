@@ -7,4 +7,29 @@ export default defineConfig({
     host: true,
     port: 5173,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('tesseract.js')) {
+            return 'ocr';
+          }
+
+          if (id.includes('chart.js') || id.includes('react-chartjs-2')) {
+            return 'charts';
+          }
+
+          if (id.includes('firebase')) {
+            return 'firebase';
+          }
+
+          if (id.includes('react')) {
+            return 'react-vendor';
+          }
+
+          return null;
+        },
+      },
+    },
+  },
 });

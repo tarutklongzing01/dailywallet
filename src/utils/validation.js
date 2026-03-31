@@ -43,6 +43,22 @@ export function validateRegisterForm(values) {
   };
 }
 
+export function validateReceiptFile(file) {
+  if (!file) {
+    return '';
+  }
+
+  if (!file.type?.startsWith('image/')) {
+    return 'แนบได้เฉพาะไฟล์รูปภาพเท่านั้น';
+  }
+
+  if (file.size > 10 * 1024 * 1024) {
+    return 'รูปสลิปต้องมีขนาดไม่เกิน 10 MB';
+  }
+
+  return '';
+}
+
 export function validateTransactionForm(values) {
   const resolvedCategory =
     values.category === '__custom__' ? values.customCategory?.trim() : values.category?.trim();
@@ -52,8 +68,8 @@ export function validateTransactionForm(values) {
     type: values.type ? '' : 'กรุณาเลือกประเภทรายการ',
     category: resolvedCategory ? '' : 'กรุณาเลือกหรือกรอกหมวดหมู่',
     description: values.description?.trim() ? '' : 'กรุณากรอกรายละเอียด',
-    amount:
-      Number(values.amount) > 0 ? '' : 'จำนวนเงินต้องมากกว่า 0',
+    amount: Number(values.amount) > 0 ? '' : 'จำนวนเงินต้องมากกว่า 0',
+    receiptFile: validateReceiptFile(values.receiptFile),
   };
 }
 

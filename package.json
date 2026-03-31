@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "deploy:firebase": "firebase deploy",
-    "deploy:rules": "firebase deploy --only firestore:rules"
+    "deploy:rules": "firebase deploy --only firestore:rules,storage"
   },
   "dependencies": {
     "chart.js": "^4.4.3",
@@ -16,7 +16,8 @@
     "react": "^19.0.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.0.0"
+    "react-router-dom": "^7.0.0",
+    "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.0.0",
