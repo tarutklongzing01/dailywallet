@@ -1,0 +1,56 @@
+:root {
+  color-scheme: light;
+  --font-body: 'IBM Plex Sans Thai', sans-serif;
+  --font-display: 'IBM Plex Sans Thai', sans-serif;
+  --bg-body: #f4f7f1;
+  --bg-body-muted: #e7efe3;
+  --bg-surface: rgba(255, 255, 255, 0.82);
+  --bg-surface-strong: rgba(255, 255, 255, 0.94);
+  --bg-inset: rgba(16, 37, 66, 0.04);
+  --bg-sidebar: rgba(16, 37, 66, 0.88);
+  --border-soft: rgba(16, 37, 66, 0.1);
+  --border-strong: rgba(16, 37, 66, 0.18);
+  --text-primary: #102542;
+  --text-secondary: #58677b;
+  --text-muted: #7f8a98;
+  --color-income: #1f8a70;
+  --color-income-soft: rgba(31, 138, 112, 0.14);
+  --color-expense: #d95d39;
+  --color-expense-soft: rgba(217, 93, 57, 0.12);
+  --color-accent: #f4c95d;
+  --color-accent-dark: #f18805;
+  --color-link: #245f73;
+  --shadow-soft: 0 22px 60px rgba(16, 37, 66, 0.12);
+  --shadow-card: 0 16px 32px rgba(16, 37, 66, 0.08);
+  --radius-lg: 28px;
+  --radius-md: 20px;
+  --radius-sm: 14px;
+  --gradient-brand: linear-gradient(135deg, #1f8a70 0%, #102542 100%);
+  --gradient-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(248, 250, 246, 0.9) 100%);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg-body: #07131f;
+  --bg-body-muted: #0f2030;
+  --bg-surface: rgba(15, 32, 48, 0.82);
+  --bg-surface-strong: rgba(17, 35, 52, 0.94);
+  --bg-inset: rgba(255, 255, 255, 0.04);
+  --bg-sidebar: rgba(7, 19, 31, 0.92);
+  --border-soft: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text-primary: #eef4ff;
+  --text-secondary: #b7c4d4;
+  --text-muted: #91a2b8;
+  --color-income: #43c39a;
+  --color-income-soft: rgba(67, 195, 154, 0.16);
+  --color-expense: #ff8566;
+  --color-expense-soft: rgba(255, 133, 102, 0.18);
+  --color-accent: #f4c95d;
+  --color-accent-dark: #f5a524;
+  --color-link: #8fd3ff;
+  --shadow-soft: 0 22px 60px rgba(0, 0, 0, 0.34);
+  --shadow-card: 0 16px 32px rgba(0, 0, 0, 0.26);
+  --gradient-brand: linear-gradient(135deg, #43c39a 0%, #123a57 100%);
+  --gradient-surface: linear-gradient(180deg, rgba(16, 33, 49, 0.9) 0%, rgba(10, 22, 34, 0.95) 100%);
+}
